@@ -24,7 +24,7 @@ class Clock extends Component {
     const {time, status} = this.state;
     return (
       <div className="alarm">
-        <span className="time">{time.format('h:mm a, dddd')}</span>
+        <span className="time">{time.format('h:mm a')}</span>
         <span className={`status ${status}`} onClick={this.handleStatusToggle}>{status}</span>
       </div>
     );

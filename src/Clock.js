@@ -41,10 +41,9 @@ class Clock extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const date = Moment(this.state.alarmInput);
-    console.log('Date:', date);
+    const date = Moment(this.state.alarmInput, ['h:m a', 'H:m']);
     if (!date.isValid()) {
-      alert('Please enter a date/time (e.g. 12:30 25/10/17)');
+      alert('Whoops, please enter a time value');
       return;
     }
 
@@ -77,7 +76,7 @@ class Clock extends Component {
 
           {/* Creating new alarms */}
           <form onSubmit={this.handleSubmit} className="alarm create">
-            <input type="text" value={this.state.alarmInput} onChange={this.handleChange} placeholder="time mm/dd/yy" />
+            <input type="text" value={this.state.alarmInput} onChange={this.handleChange} placeholder="Add alarm (new time)" />
             <input type="submit" className="status" />
           </form>
         </div>
