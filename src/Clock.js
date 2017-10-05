@@ -1,12 +1,27 @@
 import React, {Component} from 'react';
+import Moment from 'moment';
 import Alarm from './Alarm';
 
 class Clock extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentTime: new Date()
+      currentTime: new Date(),
+      alarmInput: '',
+      alarms: [
+        {
+          time: Moment('8:00 10/10/17'),
+          status: 'on'
+        },
+        {
+          time: Moment('22:00 12/10/17'),
+          status: 'off'
+        }
+      ]
     };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -15,6 +30,36 @@ class Clock extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timer);
+  }
+
+  handleChange(event) {
+    this.setState({
+      alarmInput: event.target.value
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const date = Moment(this.state.alarmInput);
+    console.log('Date:', date);
+    if (!date.isValid()) {
+      alert('Please enter a date/time (e.g. 12:30 25/10/17)');
+      return;
+    }
+
+    // Add to alarms
+    this.state.alarms.push({
+      time: date,
+      status: 'on'
+    });
+
+    this.setState({
+      alarmInput: '',
+      alarms: this.state.alarms
+    });
+
+    // TODO: Set in S3 bucket
   }
 
   tick() {
@@ -26,10 +71,13 @@ class Clock extends Component {
       <div className="container">
         <h2 className="clock">{this.state.currentTime.toLocaleTimeString()}</h2>
         <div className="alarms-container">
-          <Alarm time="8:00 am" status="on" />
-          <Alarm time="10:00 pm" status="off" />
-          <form action="" className="alarm create">
-            <input type="text" placeholder="Create new alarm" />
+          {this.state.alarms.map((alarm, i) => 
+            <Alarm time={alarm.time} status={alarm.status} key={i} />
+          )}
+
+          {/* Creating new alarms */}
+          <form onSubmit={this.handleSubmit} className="alarm create">
+            <input type="text" value={this.state.alarmInput} onChange={this.handleChange} placeholder="time mm/dd/yy" />
             <input type="submit" className="status" />
           </form>
         </div>
