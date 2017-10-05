@@ -1,4 +1,5 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import { saveToS3 } from './Utils';
 
 class Clock extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class Clock extends Component {
 
   handleStatusToggle() {
     // TODO: Set in S3 bucket
+    saveToS3('TODO');    
 
     const status = this.state.status === "on" ? "off" : "on";
     this.setState({
@@ -21,7 +23,7 @@ class Clock extends Component {
   }
   
   render () {
-    const {time, status} = this.state;
+    const { time, status } = this.state;
     return (
       <div className="alarm">
         <span className="time">{time.format('h:mm a')}</span>

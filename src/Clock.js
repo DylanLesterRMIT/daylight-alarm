@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Moment from 'moment';
+import { saveToS3 } from './Utils';
 import Alarm from './Alarm';
 
 class Clock extends Component {
@@ -10,11 +11,11 @@ class Clock extends Component {
       alarmInput: '',
       alarms: [
         {
-          time: Moment('8:00 10/10/17'),
+          time: Moment('8:30 am', ['h:m a', 'H:m']),
           status: 'on'
         },
         {
-          time: Moment('22:00 12/10/17'),
+          time: Moment('10:00 pm', ['h:m a', 'H:m']),
           status: 'off'
         }
       ]
@@ -59,6 +60,7 @@ class Clock extends Component {
     });
 
     // TODO: Set in S3 bucket
+    saveToS3('TODO');
   }
 
   tick() {
