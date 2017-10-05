@@ -1,9 +1,11 @@
 import React from 'react';
 import {render} from 'react-dom';
 
+import Clock from './Clock';
+
 class App extends React.Component {
   render () {
-    return <h2>Hello World!</h2>;
+    return <Clock />;
   }
 }
 
