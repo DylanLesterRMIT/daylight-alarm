@@ -20,6 +20,26 @@ export function saveToS3(data) {
     });
 }
 
+export function loadFromS3() {
+  // Load data from S3 Bucket
+  const s3 = new AWS.S3();
+  
+  const loadData = {
+    Bucket: 's3542871-cc-assignment-2-alarms',
+    Key: 'alarms.json'
+  };
+
+  return new Promise((resolve, reject) => 
+    s3.getObject(loadData, (err, data) => {
+      if (err) {
+        console.log(err, err.stack); // an error occurred
+        reject(err);
+      }
+      resolve(JSON.parse(data.Body.toString()));
+    })
+  );
+}
+
 // FIXME: Code from Clock.handleAlarmStatusToggle() that doesn't work
 
 // The below does not work. It updates the state's alarms array but for some reason does

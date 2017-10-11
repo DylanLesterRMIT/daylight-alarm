@@ -1,23 +1,10 @@
 import React, { Component } from 'react';
 import Moment from 'moment';
 import shortid from 'shortid';
-import { saveToS3 } from './Utils';
+import { saveToS3, loadFromS3 } from './Utils';
 
 // Components
 import Alarm from './Alarm';
-
-const demoAlarms = [
-  {
-    id: shortid.generate(),
-    time: Moment('8:30 am', ['h:m a', 'H:m']),
-    status: 'on'
-  },
-  {
-    id: shortid.generate(),
-    time: Moment('10:00 pm', ['h:m a', 'H:m']),
-    status: 'off'
-  }
-]
 
 class Clock extends Component {
   constructor(props) {
@@ -25,17 +12,29 @@ class Clock extends Component {
     this.state = {
       currentTime: new Date(),
       alarmInput: '',
-      alarms: demoAlarms
+      alarms: []
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleAlarmStatusToggle = this.handleAlarmStatusToggle.bind(this);    
+    this.handleAlarmStatusToggle = this.handleAlarmStatusToggle.bind(this);
   }
 
   // Lifecycle methods
   componentDidMount() {
+    // Run clock
     this.timer = setInterval(() => this.clockTick(), 1000);
+
+    // Load alarms from S3
+    loadFromS3().then(fetchedAlarms => {
+      // Transform time string into Moment object
+      const alarms = fetchedAlarms.map(a => {
+        a.time = new Moment(a.time);
+        return a;
+      });
+
+      this.setState({alarms})
+    });
   }
 
   componentWillUnmount() {
@@ -92,17 +91,26 @@ class Clock extends Component {
 
   render () {
     const { currentTime, alarms, alarmInput } = this.state;
+
+    let alarmsSection;
+    if (alarms.length > 0) {
+      alarmsSection = alarms.map(({ id, time, status }) => 
+        <Alarm key={id}
+               id={id}
+               time={time}
+               status={status}
+               handleStatusToggle={this.handleAlarmStatusToggle} />
+      );
+    }
+    else {
+      alarmsSection = <div className="no-alarms">No alarms set, try and add some!</div>
+    }
+    
     return (
       <div className="container">
         <h2 className="clock">{currentTime.toLocaleTimeString()}</h2>
         <div className="alarms-container">
-          {alarms.map(({ id, time, status }, i) => 
-            <Alarm key={id}
-                   id={id}
-                   time={time}
-                   status={status}
-                   handleStatusToggle={this.handleAlarmStatusToggle} />
-          )}
+          {alarmsSection}
 
           {/* Creating new alarms */}
           <form onSubmit={this.handleSubmit} className="alarm create">

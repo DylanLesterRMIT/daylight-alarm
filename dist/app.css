@@ -83,3 +83,10 @@ input[type=submit] {
 input[type=submit]:hover {
   color: inherit;
 }
+
+.no-alarms {
+  padding: 2.1em 2em;
+  text-align: center;
+  color: #868686;
+  font-size: 15px;
+}
