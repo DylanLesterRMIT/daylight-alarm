@@ -1,7 +1,23 @@
 import React, { Component } from 'react';
 import Moment from 'moment';
+import shortid from 'shortid';
 import { saveToS3 } from './Utils';
+
+// Components
 import Alarm from './Alarm';
+
+const demoAlarms = [
+  {
+    id: shortid.generate(),
+    time: Moment('8:30 am', ['h:m a', 'H:m']),
+    status: 'on'
+  },
+  {
+    id: shortid.generate(),
+    time: Moment('10:00 pm', ['h:m a', 'H:m']),
+    status: 'off'
+  }
+]
 
 class Clock extends Component {
   constructor(props) {
@@ -9,16 +25,7 @@ class Clock extends Component {
     this.state = {
       currentTime: new Date(),
       alarmInput: '',
-      alarms: [
-        {
-          time: Moment('8:30 am', ['h:m a', 'H:m']),
-          status: 'on'
-        },
-        {
-          time: Moment('10:00 pm', ['h:m a', 'H:m']),
-          status: 'off'
-        }
-      ]
+      alarms: demoAlarms
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -50,6 +57,7 @@ class Clock extends Component {
 
     // Add to alarms
     this.state.alarms.push({
+      id: shortid.generate(),
       time: date,
       status: 'on'
     });
@@ -68,17 +76,22 @@ class Clock extends Component {
   }
 
   render () {
+    const { currentTime, alarms, alarmInput } = this.state;
     return (
       <div className="container">
-        <h2 className="clock">{this.state.currentTime.toLocaleTimeString()}</h2>
+        <h2 className="clock">{currentTime.toLocaleTimeString()}</h2>
         <div className="alarms-container">
-          {this.state.alarms.map((alarm, i) => 
-            <Alarm time={alarm.time} status={alarm.status} key={i} />
+          {alarms.map(({ id, time, status }, i) => 
+            <Alarm key={id}
+                   id={id}
+                   time={time}
+                   status={status}
+                   handleStatusToggle={this.handleAlarmStatusToggle} />
           )}
 
           {/* Creating new alarms */}
           <form onSubmit={this.handleSubmit} className="alarm create">
-            <input type="text" value={this.state.alarmInput} onChange={this.handleChange} placeholder="Add alarm (new time)" />
+            <input type="text" value={alarmInput} onChange={this.handleChange} placeholder="Add alarm (new time)" />
             <input type="submit" className="status" />
           </form>
         </div>

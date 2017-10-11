@@ -5,6 +5,7 @@ class Clock extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: props.id,
       time: props.time,
       status: props.status || "on"
     };
@@ -16,6 +17,7 @@ class Clock extends Component {
     // TODO: Set in S3 bucket
     saveToS3('TODO');    
 
+    // Toggle alarm's status
     const status = this.state.status === "on" ? "off" : "on";
     this.setState({
       status
