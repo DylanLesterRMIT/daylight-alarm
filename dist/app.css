@@ -54,6 +54,7 @@ body {
   text-transform: uppercase;
   font-weight: bold;
   cursor: pointer;
+  user-select: none;
 }
 
 .status:hover {
@@ -76,6 +77,7 @@ input {
 input[type=submit] {
   background-color: white;
   color: #868686;
+  user-select: none;
 }
 
 input[type=submit]:hover {
