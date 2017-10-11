@@ -72,10 +72,10 @@ class Clock extends Component {
     this.setState({
       alarmInput: '',
       alarms: this.state.alarms
+    }, () => {
+      // Set in S3 bucket
+      saveToS3(this.state.alarms);    
     });
-
-    // Set in S3 bucket
-    saveToS3(this.state.alarms);    
   }
 
   // Alarm handlers
@@ -84,10 +84,12 @@ class Clock extends Component {
     const alarms = [...this.state.alarms];
     const alarm = alarms.find(a => a.id === toggledAlarm.id);
     alarm.status = alarm.status === "on" ? "off" : "on";
-    this.setState({alarms}); // Should re-render, doesn't
 
-    // Set in S3 bucket
-    saveToS3(this.state.alarms);
+    // this.setState should trigger a re-render but it doesn't
+    this.setState({alarms}, () => {
+      // Set in S3 bucket
+      saveToS3(this.state.alarms);
+    });
   }
 
   handleEmptyAlarms() {
