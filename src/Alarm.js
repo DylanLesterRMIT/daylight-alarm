@@ -7,16 +7,16 @@ class Clock extends Component {
     this.state = {
       id: props.id,
       time: props.time,
-      status: props.status || "on"
+      status: props.status || "on",
+      parentHandleStatusToggle: props.handleStatusToggle      
     };
 
     this.handleStatusToggle = this.handleStatusToggle.bind(this);
   }
 
   handleStatusToggle() {
-    // TODO: Set in S3 bucket
-    saveToS3('TODO');    
-
+    this.state.parentHandleStatusToggle(this.state);
+    
     // Toggle alarm's status
     const status = this.state.status === "on" ? "off" : "on";
     this.setState({

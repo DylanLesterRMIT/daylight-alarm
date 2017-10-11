@@ -30,16 +30,23 @@ class Clock extends Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleAlarmStatusToggle = this.handleAlarmStatusToggle.bind(this);    
   }
 
+  // Lifecycle methods
   componentDidMount() {
-    this.timer = setInterval(() => this.tick(), 1000);
+    this.timer = setInterval(() => this.clockTick(), 1000);
   }
 
   componentWillUnmount() {
     clearInterval(this.timer);
   }
 
+  clockTick() {
+    this.setState({currentTime: new Date()});
+  }
+
+  // Form handlers
   handleChange(event) {
     this.setState({
       alarmInput: event.target.value
@@ -71,8 +78,10 @@ class Clock extends Component {
     saveToS3('TODO');
   }
 
-  tick() {
-    this.setState({currentTime: new Date()});
+  // Alarm handlers
+  handleAlarmStatusToggle(toggledAlarm) {
+    // TODO: Set in S3 bucket
+    saveToS3('TODO');
   }
 
   render () {
