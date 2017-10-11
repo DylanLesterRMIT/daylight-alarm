@@ -1,6 +1,23 @@
 export function saveToS3(data) {
   // Send data to S3 Bucket
-  console.log('Data:', data);
+  const params = {
+    Bucket: 's3542871-cc-assignment-2-alarms'
+  };
+
+  const s3 = new AWS.S3({params});
+
+  const uploadData = {
+    Key: 'alarms.json',
+    ContentType: 'application/json',
+    Body: JSON.stringify(data, null, 4)
+  };
+
+  // Perform upload
+  s3.upload(uploadData)
+    .send((err, data) => {
+      if (err) throw err;
+      // Perfom with knowledge of returned data
+    });
 }
 
 // FIXME: Code from Clock.handleAlarmStatusToggle() that doesn't work

@@ -74,14 +74,20 @@ class Clock extends Component {
       alarms: this.state.alarms
     });
 
-    // TODO: Set in S3 bucket
-    saveToS3('TODO');
+    // Set in S3 bucket
+    saveToS3(this.state.alarms);
   }
 
   // Alarm handlers
   handleAlarmStatusToggle(toggledAlarm) {
-    // TODO: Set in S3 bucket
-    saveToS3('TODO');
+    // Toggle alarms status
+    const alarms = [...this.state.alarms];
+    const alarm = alarms.find(a => a.id === toggledAlarm.id);
+    alarm.status = alarm.status === "on" ? "off" : "on";
+    this.setState({alarms}); // Should re-render, doesn't
+
+    // Set in S3 bucket
+    saveToS3(this.state.alarms);
   }
 
   render () {
