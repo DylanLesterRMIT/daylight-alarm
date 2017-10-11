@@ -27,15 +27,7 @@ class Clock extends Component {
     this.timer = setInterval(() => this.clockTick(), 1000);
 
     // Load alarms from S3
-    loadFromS3().then(fetchedAlarms => {
-      // Transform time string into Moment object
-      const alarms = fetchedAlarms.map(a => {
-        a.time = new Moment(a.time);
-        return a;
-      });
-
-      this.setState({alarms})
-    });
+    loadFromS3().then(alarms => this.setState({alarms}));
   }
 
   componentWillUnmount() {

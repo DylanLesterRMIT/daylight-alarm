@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 export function saveToS3(data) {
   // Send data to S3 Bucket
   const params = {
@@ -35,7 +37,16 @@ export function loadFromS3() {
         console.log(err, err.stack); // an error occurred
         reject(err);
       }
-      resolve(JSON.parse(data.Body.toString()));
+
+      const jsonData = JSON.parse(data.Body.toString());
+
+      // Transform time string into Moment date object
+      const alarms = jsonData.map(a => {
+        a.time = new Moment(a.time);
+        return a;
+      });
+
+      resolve(alarms);
     })
   );
 }
