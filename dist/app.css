@@ -90,3 +90,19 @@ input[type=submit]:hover {
   color: #868686;
   font-size: 15px;
 }
+
+.clear-button-container {
+  border-top: 1px solid #eee;
+}
+
+.clear-button {
+  display: block;
+  margin: 1em auto 0 auto;
+  padding-bottom: 0.6em;
+  background-color: white;
+  border: none;
+  text-transform: lowercase;
+  color: #868686;
+  font-size: 12px;
+  cursor: pointer;
+}

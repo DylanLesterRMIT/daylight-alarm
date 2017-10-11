@@ -18,6 +18,7 @@ class Clock extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleAlarmStatusToggle = this.handleAlarmStatusToggle.bind(this);
+    this.handleEmptyAlarms = this.handleEmptyAlarms.bind(this);
   }
 
   // Lifecycle methods
@@ -74,7 +75,7 @@ class Clock extends Component {
     });
 
     // Set in S3 bucket
-    saveToS3(this.state.alarms);
+    saveToS3(this.state.alarms);    
   }
 
   // Alarm handlers
@@ -87,6 +88,13 @@ class Clock extends Component {
 
     // Set in S3 bucket
     saveToS3(this.state.alarms);
+  }
+
+  handleEmptyAlarms() {
+    this.setState({alarms: []}, () => {
+      // Set in S3 bucket
+      saveToS3(this.state.alarms);
+    });
   }
 
   render () {
@@ -118,6 +126,11 @@ class Clock extends Component {
             <input type="submit" className="status" />
           </form>
         </div>
+        {alarms.length > 0 &&
+          <div className="clear-button-container">
+            <button className="clear-button" onClick={this.handleEmptyAlarms}>Empty alarms</button>
+          </div>
+        }
       </div>
     );
   }
