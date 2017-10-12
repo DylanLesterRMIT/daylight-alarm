@@ -5,7 +5,7 @@ Daylight Alarm is a product that allows a user to create alarms that when trigge
 ## Getting Started
 
 Daylight Alarm utilises the AWS cloud stack, therefore there is little required to start.
-Open up `dist/index.html` to see the application. To make changes to the application code it requires having [Node.js and NPM](https://nodejs.org/en/) installed and then running `npm start` from the root directory.
+Open up `dist/index.html` to see the application. To make changes to the application code it requires having [Node.js and NPM](https://nodejs.org/en/) installed, installing the dependencies via `npm install` (required on install only), and then running `npm start` from the root directory.
 
 ## AWS Stack
 Daylight Alarm makes use of the AWS cloud stack. The technologies used are listed here:
