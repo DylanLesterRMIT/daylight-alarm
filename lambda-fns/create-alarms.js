@@ -1,6 +1,7 @@
 const aws = require('aws-sdk');
 
 const s3 = new aws.S3({ apiVersion: '2006-03-01' });
+const cloudwatchevents = new aws.CloudWatchEvents();
 
 exports.handler = (event, context, callback) => {
     //console.log('Received event:', JSON.stringify(event, null, 2));
@@ -28,8 +29,6 @@ exports.handler = (event, context, callback) => {
 };
 
 function createCloudWatchRulesFromAlarms(alarms) {
-    const cloudwatchevents = new aws.CloudWatchEvents();
-
     // Iterate over alarms and create associated rules
     alarms.forEach(alarm => {
         // Extract alarm time
@@ -37,18 +36,46 @@ function createCloudWatchRulesFromAlarms(alarms) {
         const hours = date.getHours();
         const minutes = date.getMinutes();
 
+        // Set rule name to something meaningful
+        alarm.name = `${hours}-${minutes}-${alarm.id}`
+
         // Prepare parameters
         const scheduleExpression = `cron(${minutes} ${hours} * * ? *)`; // Set alarm to run everyday
         const params = {
-            Name: alarm.id,
+            Name: alarm.name,
             ScheduleExpression: scheduleExpression
         };
     
         // Create alarms
         cloudwatchevents.putRule(params).promise()
-            .then(success => console.log(`Created rule for ${alarm.id} successfully!`))
+            .then(success => {
+                console.log(`Created rule for ${alarm.name} successfully!`);
+                console.log('Returned success item:', success);
+
+                attachTargetToAlarm(alarm);
+            })
             .catch(err => console.log(err, err.stack));
     });
+}
+
+function attachTargetToAlarm(alarm) {
+    const params = {
+        Rule: alarm.name,
+        // Pretty fiddly getting the blow to work, required debugging the AWS services as no error was thrown
+        Targets: [ /* required */
+            {
+                Arn: 'arn:aws:lambda:ap-southeast-2:760928209219:function:fire-alarm', /* required */
+                Id: 'Id288879814480', /* required */
+                Input: JSON.stringify({response: 'This is the input for the alarm that was created by create-alarms!'}),
+            }
+        ]
+    };
+    cloudwatchevents.putTargets(params).promise()
+        .then(success => {
+            console.log(`Put target on ${alarm.name} successfully!`);
+            console.log('Returned success item:', success);
+        })
+        .catch(err => console.log(err, err.stack));
 }
 
 // FIXME
