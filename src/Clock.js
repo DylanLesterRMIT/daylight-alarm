@@ -1,24 +1,22 @@
 import React, { Component } from 'react';
-import Moment from 'moment';
 import shortid from 'shortid';
 import { saveToS3, loadFromS3 } from './Utils';
 
 // Components
 import Alarm from './Alarm';
+import AlarmInput from './AlarmInput';
 
 class Clock extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentTime: new Date(),
-      alarmInput: '',
       alarms: []
     };
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.handleAlarmStatusToggle = this.handleAlarmStatusToggle.bind(this);
     this.handleEmptyAlarms = this.handleEmptyAlarms.bind(this);
+    this.handleAddAlarm = this.handleAddAlarm.bind(this);
   }
 
   // Lifecycle methods
@@ -36,38 +34,6 @@ class Clock extends Component {
 
   clockTick() {
     this.setState({currentTime: new Date()});
-  }
-
-  // Form handlers
-  handleChange(event) {
-    this.setState({
-      alarmInput: event.target.value
-    });
-  }
-
-  handleSubmit(event) {
-    event.preventDefault();
-
-    const date = Moment(this.state.alarmInput, ['h:m a', 'H:m']);
-    if (!date.isValid()) {
-      alert('Whoops, please enter a time value');
-      return;
-    }
-
-    // Add to alarms
-    this.state.alarms.push({
-      id: shortid.generate(),
-      time: date,
-      status: 'on'
-    });
-
-    this.setState({
-      alarmInput: '',
-      alarms: this.state.alarms
-    }, () => {
-      // Set in S3 bucket
-      saveToS3(this.state.alarms);    
-    });
   }
 
   // Alarm handlers
@@ -88,8 +54,24 @@ class Clock extends Component {
     });
   }
 
+  handleAddAlarm(date) {
+    const alarms = [...this.state.alarms];
+
+    // Add to alarms
+    alarms.push({
+      id: shortid.generate(),
+      time: date,
+      status: 'on'
+    });
+
+    this.setState({alarms}, () => {
+      // Set in S3 bucket
+      saveToS3(this.state.alarms);
+    });
+  }
+
   render () {
-    const { currentTime, alarms, alarmInput } = this.state;
+    const { currentTime, alarms } = this.state;
 
     let alarmsSection;
     if (alarms.length > 0) {
@@ -107,14 +89,14 @@ class Clock extends Component {
       <div className="container">
         <h2 className="clock">{currentTime.toLocaleTimeString()}</h2>
         <div className="alarms-container">
+          {/* Show all alarms */}
           {alarmsSection}
 
           {/* Creating new alarms */}
-          <form onSubmit={this.handleSubmit} className="alarm create">
-            <input type="text" value={alarmInput} onChange={this.handleChange} placeholder="Add alarm (new time)" />
-            <input type="submit" className="status" />
-          </form>
+          <AlarmInput onAddAlarm={this.handleAddAlarm} />
         </div>
+
+        {/* Show empty alarms if alarms exist */}
         {alarms.length > 0 &&
           <div className="clear-button-container">
             <button className="clear-button" onClick={this.handleEmptyAlarms}>Empty alarms</button>
