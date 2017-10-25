@@ -71,14 +71,11 @@ class Clock extends Component {
   }
 
   // Alarm handlers
-  handleAlarmStatusToggle(toggledAlarm) {
+  handleAlarmStatusToggle(alarm) {
     // Toggle alarms status
-    const alarms = [...this.state.alarms];
-    const alarm = alarms.find(a => a.id === toggledAlarm.id);
     alarm.status = alarm.status === "on" ? "off" : "on";
-
-    // this.setState should trigger a re-render but it doesn't
-    this.setState({alarms}, () => {
+    
+    this.setState({alarms: this.state.alarms}, () => {
       // Set in S3 bucket
       saveToS3(this.state.alarms);
     });
@@ -96,11 +93,9 @@ class Clock extends Component {
 
     let alarmsSection;
     if (alarms.length > 0) {
-      alarmsSection = alarms.map(({ id, time, status }) => 
-        <Alarm key={id}
-               id={id}
-               time={time}
-               status={status}
+      alarmsSection = alarms.map(alarm => 
+        <Alarm key={alarm.id}
+               alarm={alarm}
                handleStatusToggle={this.handleAlarmStatusToggle} />
       );
     }
