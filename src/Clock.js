@@ -97,14 +97,18 @@ class Clock extends Component {
         </div>
 
         {/* Show empty alarms if alarms exist */}
-        {alarms.length > 0 &&
-          <div className="clear-button-container">
-            <button className="clear-button" onClick={this.handleEmptyAlarms}>Empty alarms</button>
-          </div>
-        }
+        {alarms.length > 0 && <EmptyAlarms onClick={this.handleEmptyAlarms} />}
       </div>
     );
   }
+}
+
+function EmptyAlarms(props) {
+  return (
+    <div className="clear-button-container">
+      <button className="clear-button" onClick={props.onClick}>Empty alarms</button>
+    </div>
+  );
 }
 
 export default Clock;
